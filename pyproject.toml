@@ -1,21 +1,34 @@
 [project]
 name = "json-tabulate"
-version = "0.1.0"
+version = "0.0.0"
 description = "Python library and CLI app that translates arbitrarily-nested JSON into CSV"
 readme = "README.md"
 authors = []
 requires-python = ">=3.9"
 dependencies = [
+    # We use `jsonpath-ng` to parse the JSONPath expressions users enter to indicate
+    # which JSON value (within the input JSON string) they want to translate.
+    # Reference: https://pypi.org/project/jsonpath-ng/
+    "jsonpath-ng>=1.7.0",
+    # We use Typer as the CLI application framework.
     "typer>=0.9.0",
-    "typing-extensions>=4.15.0"
+    # We depend on the `typing-extensions` package's `Annotated` class,
+    # which we use to define metadata on CLI arguments/options.
+    "typing-extensions>=4.15.0",
 ]
 
 [dependency-groups]
 dev = [
+    # We use `mypy` for static type checking.
     "mypy>=1.18.1",
+    # We use `ptpython` as a developer-friendly REPL.
+    # Docs: https://github.com/prompt-toolkit/ptpython
     "ptpython>=3.0.31",
+    # We use `pytest` as a test runner.
     "pytest>=7.0.0",
+    # We use `pytest-cov` to report test coverage.
     "pytest-cov>=4.0.0",
+    # We use `ruff` as a code formatter and linter.
     "ruff>=0.13.0",
 ]
 
