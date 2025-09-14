@@ -1,0 +1,73 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run tests",
+            "type": "shell",
+            "command": "uv run pytest",
+            "problemMatcher": [
+                "$python"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Run tests (with coverage)",
+            "type": "shell",
+            "command": "uv run pytest --cov",
+            "problemMatcher": [
+                "$python"
+            ]
+        },
+        {
+            "label": "Lint code",
+            "type": "shell",
+            "command": "uv run ruff check",
+            "problemMatcher": [
+                "$python"
+            ]
+        },
+        {
+            "label": "Format code (dry run)",
+            "type": "shell",
+            "command": "uv run ruff format --diff",
+            "problemMatcher": [
+                "$python"
+            ]
+        },
+        {
+            "label": "Format code",
+            "type": "shell",
+            "command": "uv run ruff format",
+            "problemMatcher": [
+                "$python"
+            ]
+        },
+        {
+            "label": "Check types",
+            "type": "shell",
+            "command": "uv run mypy",
+            "problemMatcher": [
+                "$python"
+            ]
+        },
+        {
+            "label": "Kitchen sink",
+            "type": "shell",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Lint code",
+                "Format code (dry run)",
+                "Check types",
+                "Run tests (with coverage)"
+            ],
+            "problemMatcher": [
+                "$python"
+            ]
+        }
+    ]
+}
