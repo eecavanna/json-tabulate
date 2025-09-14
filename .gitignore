@@ -1,0 +1,13 @@
+/.mypy_cache
+/.pytest_cache
+/.ruff_cache
+/.venv
+/.coverage
+/dist
+__pycache__
+
+# macOS files:
+.DS_Store
+
+# IDE files:
+/.idea
