@@ -10,6 +10,21 @@ Install dependencies:
 uv sync
 ```
 
+Lint Python source code:
+
+```sh
+uv run ruff check
+```
+
+Format Python source code:
+
+```sh
+uv run ruff format
+
+# Other option: Do a dry run.
+uv run ruff format --diff
+```
+
 Run CLI program:
 
 ```sh

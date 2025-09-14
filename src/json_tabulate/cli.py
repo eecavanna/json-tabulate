@@ -21,17 +21,23 @@ app = typer.Typer(
 @app.command()
 def convert(
     file_path: Annotated[
-        Optional[Path], 
-        typer.Argument(help="Path to JSON file to process. If not provided, reads from STDIN.")
+        Optional[Path],
+        typer.Argument(
+            help="Path to JSON file to process. If not provided, reads from STDIN."
+        ),
     ] = None,
     output: Annotated[
         Optional[Path],
-        typer.Option("--output", "-o", help="Output file path. If not provided, prints to STDOUT.")
+        typer.Option(
+            "--output",
+            "-o",
+            help="Output file path. If not provided, prints to STDOUT.",
+        ),
     ] = None,
 ) -> None:
     """
     Convert JSON to CSV format.
-    
+
     Examples:
         json-tabulate data.json
         echo '{"name": "John", "age": 30}' | json-tabulate
@@ -41,22 +47,25 @@ def convert(
         if file_path is None:
             # Read from STDIN
             if sys.stdin.isatty():
-                typer.echo("Error: No input provided. Provide a file path or pipe JSON to STDIN.", err=True)
+                typer.echo(
+                    "Error: No input provided. Provide a file path or pipe JSON to STDIN.",
+                    err=True,
+                )
                 raise typer.Exit(1)
             result = process_json_from_stdin()
         else:
             # Read from file
             result = process_json(file_path=file_path)
-        
+
         if output is None:
             # Print to STDOUT
             typer.echo(result)
         else:
             # Write to file
-            with open(output, 'w', encoding='utf-8') as f:
+            with open(output, "w", encoding="utf-8") as f:
                 f.write(result)
             typer.echo(f"Output written to {output}")
-            
+
     except FileNotFoundError as e:
         typer.echo(f"Error: {e}", err=True)
         raise typer.Exit(1)
@@ -72,6 +81,7 @@ def convert(
 def version() -> None:
     """Show version information."""
     from . import __version__
+
     typer.echo(f"json-tabulate {__version__}")
 
 
