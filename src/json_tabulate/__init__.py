@@ -1,3 +1,3 @@
 """
-json-tabulate: Python library and CLI program that translates arbitrarily-nested JSON into CSV.
+json-tabulate: Python library and CLI app that translates arbitrarily-nested JSON into CSV.
 """

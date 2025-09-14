@@ -1,6 +1,12 @@
 # json-tabulate
 
-Python library and CLI program that translates arbitrarily-nested JSON into CSV
+Python library and CLI app that translates arbitrarily-nested JSON into CSV
+
+## Usage
+
+<!-- TODO: Write user guide. -->
+
+Coming soon...
 
 ## Development
 
@@ -49,7 +55,7 @@ uv run pytest --cov
 
 > The default configuration is defined in `pyproject.toml`.
 
-Run CLI program:
+Run CLI app:
 
 ```sh
 uv run json-tabulate --help
@@ -72,3 +78,9 @@ uv build
 ```
 
 > The build artifacts will be in the `dist/` directory.
+
+[Generate documentation](https://typer.tiangolo.com/tutorial/package/#generate-docs) (Markdown):
+
+```sh
+uv run typer json_tabulate.cli utils docs --name json-tabulate
+```

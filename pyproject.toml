@@ -1,7 +1,7 @@
 [project]
 name = "json-tabulate"
 version = "0.1.0"
-description = "Python library and CLI program that translates arbitrarily-nested JSON into CSV"
+description = "Python library and CLI app that translates arbitrarily-nested JSON into CSV"
 readme = "README.md"
 authors = []
 requires-python = ">=3.9"
@@ -28,6 +28,8 @@ Homepage = "https://github.com/eecavanna/json-tabulate"
 Repository = "https://github.com/eecavanna/json-tabulate"
 
 [project.scripts]
+# Tell package installers to install a CLI program named `json-tabulate`.
+# Reference: https://typer.tiangolo.com/tutorial/package/#add-a-script
 json-tabulate = "json_tabulate.cli:app"
 
 # Configure pytest to run doctests, and to not display a code coverage report if a test fails.
