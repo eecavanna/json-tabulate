@@ -5,7 +5,6 @@ Python interface for json-tabulate.
 import csv
 import io
 import json
-import sys
 from typing import Union
 
 # Define a type alias that describes any JSON value.
@@ -81,22 +80,6 @@ def process_json(json_input: str = "") -> str:
     csv_file_buffer.close()
 
     return csv_string
-
-
-def process_json_from_stdin() -> str:
-    r"""Translates the JSON string supplied via STDIN into a CSV string.
-
-    Returns:
-        A CSV string that represents the data in the JSON string.
-
-    Raises:
-        json.JSONDecodeError: If the JSON from STDIN is invalid
-    """
-    stdin_content = sys.stdin.read().strip()
-    if not stdin_content:
-        raise ValueError("No input provided via STDIN")
-
-    return process_json(json_input=stdin_content)
 
 
 def _flatten(value: JSONValue, result: dict, base_json_path: str = "$") -> dict:

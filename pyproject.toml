@@ -60,6 +60,12 @@ source = ["src"]
 [tool.mypy]
 files = ["src", "tests"]
 
+# Configure mypy to ignore missing types for third-party modules that don't provide type stubs.
+# Docs: https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-library-stubs-or-py-typed-marker
+[[tool.mypy.overrides]]
+module = "jsonpath_ng.*"
+ignore_missing_imports = true
+
 [tool.ruff]
 line-length = 120
 

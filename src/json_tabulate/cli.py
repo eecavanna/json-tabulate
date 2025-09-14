@@ -7,9 +7,10 @@ from importlib.metadata import version
 from typing import Optional
 
 import typer
+from jsonpath_ng import jsonpath, parse
 from typing_extensions import Annotated
 
-from .main import process_json, process_json_from_stdin
+from .main import process_json
 
 # Create a CLI application.
 # Reference: https://typer.tiangolo.com/tutorial/commands/#explicit-application
@@ -31,12 +32,30 @@ def show_version_and_exit_if(is_enabled: bool) -> None:
         raise typer.Exit()
 
 
+def validate_jsonpath_expression(raw_string: str) -> str:
+    """Validate a string can be parsed as a JSONPath expression."""
+
+    try:
+        _ = parse(raw_string)
+    except Exception as error:
+        raise typer.BadParameter(f"Invalid JSONPath expression. Details: {error}")
+    return raw_string
+
+
 @app.command()
 def translate(
     json_string: Annotated[
         Optional[str],
         typer.Argument(help="JSON string to translate. If not provided, program will read from STDIN."),
     ] = None,
+    base_jsonpath_str: Annotated[
+        Optional[str],
+        typer.Option(
+            "--base",
+            callback=validate_jsonpath_expression,
+            help="JSONPath expression referencing the JSON element to translate (defaults to the root element).",
+        ),
+    ] = "$",
     # Reference: https://typer.tiangolo.com/tutorial/options/version/#fix-with-is_eager
     version: Annotated[
         Optional[bool],
@@ -53,17 +72,26 @@ def translate(
     - `echo '{"name": "Ken", "age": 26}' | json-tabulate` (specify JSON via STDIN)
     - `cat input.json | json-tabulate > output.csv` (write CSV to file)
     """
+    # Parse the base JSONPath expression.
+    # Note: By the time this runs, we know it can be parsed successfully,
+    #       since the validation callback will already have run.
+    _: jsonpath.JSONPath = parse(base_jsonpath_str)
+
     try:
+        # Check whether the JSON was provided via a CLI argument.
         if json_string is not None:
             result = process_json(json_input=json_string)
         else:
+            # Check whether STDIN is connected to an interactive terminal,
+            # in which case, it would not be receiving any input via a pipe.
             if sys.stdin.isatty():
-                typer.echo(
-                    "Error: No input provided. Provide a JSON string as an argument or pipe JSON to STDIN.",
-                    err=True,
-                )
-                raise typer.Exit(1)
-            result = process_json_from_stdin()
+                raise typer.BadParameter("No JSON was provided via argument or STDIN.")
+            else:
+                stdin_content = sys.stdin.read().strip()
+                if isinstance(stdin_content, str) and stdin_content != "":
+                    result = process_json(json_input=stdin_content)
+                else:
+                    raise typer.BadParameter("No JSON was provided via STDIN.")
 
         typer.echo(result)
 

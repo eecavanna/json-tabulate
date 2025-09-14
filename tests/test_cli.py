@@ -55,10 +55,10 @@ class TestCLI:
         assert "Error: Invalid JSON string" in result.stdout
 
     def test_specifying_empty_string(self):
-        result = self.runner.invoke(app, [''])
+        result = self.runner.invoke(app, [""])
         assert result.exit_code == 1
         assert "Error: Invalid JSON string" in result.stdout
 
-        result = self.runner.invoke(app, input='')
+        result = self.runner.invoke(app, input="")
         assert result.exit_code == 1
-        assert "Error: No input provided via STDIN" in result.stdout
+        assert "No JSON was provided via STDIN" in result.stdout
