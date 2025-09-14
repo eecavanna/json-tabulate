@@ -59,6 +59,8 @@ def process_json(
             )
 
         return f"Hello! Processed JSON file '{file_path.name}' with {len(str(parsed))} characters."
+    
+    return ""
 
 
 def process_json_from_stdin() -> str:

@@ -25,6 +25,25 @@ uv run ruff format
 uv run ruff format --diff
 ```
 
+Check data types:
+
+```sh
+uv run mypy
+```
+
+> The default configuration is defined in `pyproject.toml`.
+
+Run tests:
+
+```sh
+uv run pytest
+
+# Other option: Run tests and measure code coverage.
+uv run pytest --cov
+```
+
+> The default configuration is defined in `pyproject.toml`.
+
 Run CLI program:
 
 ```sh

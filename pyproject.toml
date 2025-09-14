@@ -12,6 +12,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "mypy>=1.18.1",
     "ptpython>=3.0.31",
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
@@ -29,12 +30,17 @@ Repository = "https://github.com/eecavanna/json-tabulate"
 [project.scripts]
 json-tabulate = "json_tabulate.cli:app"
 
-# Configure pytest to run doctests and to (unless a test fails) display a code coverage report.
+# Configure pytest to run doctests, and to not display a code coverage report if a test fails.
 # Docs: https://docs.pytest.org/en/stable/reference/customize.html#pyproject-toml
 [tool.pytest.ini_options]
-addopts = "--doctest-modules --cov --no-cov-on-fail"
+addopts = "--doctest-modules --no-cov-on-fail"
 
 # Configure pytest-cov to measure coverage only for the `src/` directory.
 # Docs: https://pytest-cov.readthedocs.io/en/latest/config.html
 [tool.coverage.run]
 source = ["src"]
+
+# Configure mypy to perform type checking within the `src/` and `tests/` directories.
+# Docs: https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
+[tool.mypy]
+files = ["src", "tests"]
