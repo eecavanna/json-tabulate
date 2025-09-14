@@ -49,8 +49,8 @@ def translate(
     Translate JSON into CSV.
 
     Usage examples:
-    - `json-tabulate '{"name": "Aiden", "age": 13}'` (specify JSON via argument)
-    - `echo '{"name": "Aiden", "age": 13}' | json-tabulate` (specify JSON via STDIN)
+    - `json-tabulate '{"name": "Ken", "age": 26}'` (specify JSON via argument)
+    - `echo '{"name": "Ken", "age": 26}' | json-tabulate` (specify JSON via STDIN)
     - `cat input.json | json-tabulate > output.csv` (write CSV to file)
     """
     try:
