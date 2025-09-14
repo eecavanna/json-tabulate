@@ -11,7 +11,7 @@ from typing import Union
 JSONValue = Union[dict[str, "JSONValue"], list["JSONValue"], str, int, float, bool, None]
 
 
-def process_json(json_input: str = "") -> str:
+def translate_json(json_input: str = "") -> str:
     r"""Translates the JSON string passed in into a CSV string.
 
     In the resulting CSV string, each column name is a JSONPath expression indicating
@@ -34,7 +34,7 @@ def process_json(json_input: str = "") -> str:
     ...     {                                     "d": [4, null, 5]}
     ... ]
     ... '''
-    >>> csv_string = process_json(json_input)
+    >>> csv_string = translate_json(json_input)
     >>> print(csv_string, end="")
     $.a,$.b,$.c.foo,$.d[0],$.d[1],$.d[2]
     1,,,,,
@@ -42,12 +42,12 @@ def process_json(json_input: str = "") -> str:
     ,,bar,,,
     ,,,4,,5
 
-    >>> print(process_json('{"a": [1, 2, 3]}'), end="")
+    >>> print(translate_json('{"a": [1, 2, 3]}'), end="")
     $.a[0],$.a[1],$.a[2]
     1,2,3
 
     # Invalid values:
-    >>> process_json('[1, 2, 3]')
+    >>> translate_json('[1, 2, 3]')
     Traceback (most recent call last):
     ...
     ValueError: JSON value be an object or an array of objects.

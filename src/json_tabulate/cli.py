@@ -10,7 +10,7 @@ import typer
 from jsonpath_ng import jsonpath, parse
 from typing_extensions import Annotated
 
-from .main import process_json
+from .main import translate_json
 
 # Create a CLI application.
 # Reference: https://typer.tiangolo.com/tutorial/commands/#explicit-application
@@ -43,7 +43,7 @@ def validate_jsonpath_expression(raw_string: str) -> str:
 
 
 @app.command()
-def translate(
+def main(
     json_string: Annotated[
         Optional[str],
         typer.Argument(help="JSON string to translate. If not provided, program will read from STDIN."),
@@ -53,7 +53,7 @@ def translate(
         typer.Option(
             "--base",
             callback=validate_jsonpath_expression,
-            help="JSONPath expression referencing the JSON element to translate (defaults to the root element).",
+            help="JSONPath expression identifying the JSON element you want to translate (default is the outermost element).",
         ),
     ] = "$",
     # Reference: https://typer.tiangolo.com/tutorial/options/version/#fix-with-is_eager
@@ -75,12 +75,12 @@ def translate(
     # Parse the base JSONPath expression.
     # Note: By the time this runs, we know it can be parsed successfully,
     #       since the validation callback will already have run.
-    _: jsonpath.JSONPath = parse(base_jsonpath_str)
+    base_jsonpath: jsonpath.JSONPath = parse(base_jsonpath_str)
 
     try:
         # Check whether the JSON was provided via a CLI argument.
         if json_string is not None:
-            result = process_json(json_input=json_string)
+            result = translate_json(json_input=json_string)
         else:
             # Check whether STDIN is connected to an interactive terminal,
             # in which case, it would not be receiving any input via a pipe.
@@ -89,7 +89,7 @@ def translate(
             else:
                 stdin_content = sys.stdin.read().strip()
                 if isinstance(stdin_content, str) and stdin_content != "":
-                    result = process_json(json_input=stdin_content)
+                    result = translate_json(json_input=stdin_content)
                 else:
                     raise typer.BadParameter("No JSON was provided via STDIN.")
 

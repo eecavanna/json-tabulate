@@ -65,8 +65,8 @@ Import Python library:
 
 ```sh
 uv run ptpython
->>> from json_tabulate import process_json
->>> process_json(json_input=r'{}')
+>>> from json_tabulate import translate_json
+>>> translate_json(json_input=r'{}')
 ''
 >>> quit()
 ```
