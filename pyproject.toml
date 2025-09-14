@@ -6,10 +6,6 @@ readme = "README.md"
 authors = []
 requires-python = ">=3.9"
 dependencies = [
-    # We use `jsonpath-ng` to parse the JSONPath expressions users enter to indicate
-    # which JSON value (within the input JSON string) they want to translate.
-    # Reference: https://pypi.org/project/jsonpath-ng/
-    "jsonpath-ng>=1.7.0",
     # We use Typer as the CLI application framework.
     "typer>=0.9.0",
     # We depend on the `typing-extensions` package's `Annotated` class,
@@ -63,7 +59,7 @@ files = ["src", "tests"]
 # Configure mypy to ignore missing types for third-party modules that don't provide type stubs.
 # Docs: https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-library-stubs-or-py-typed-marker
 [[tool.mypy.overrides]]
-module = "jsonpath_ng.*"
+module = ""  # can add module name globs to this list
 ignore_missing_imports = true
 
 [tool.ruff]

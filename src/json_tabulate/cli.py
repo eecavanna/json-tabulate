@@ -7,7 +7,6 @@ from importlib.metadata import version
 from typing import Optional
 
 import typer
-from jsonpath_ng import jsonpath, parse
 from typing_extensions import Annotated
 
 from .main import translate_json
@@ -32,30 +31,12 @@ def show_version_and_exit_if(is_enabled: bool) -> None:
         raise typer.Exit()
 
 
-def validate_jsonpath_expression(raw_string: str) -> str:
-    """Validate a string can be parsed as a JSONPath expression."""
-
-    try:
-        _ = parse(raw_string)
-    except Exception as error:
-        raise typer.BadParameter(f"Invalid JSONPath expression. Details: {error}")
-    return raw_string
-
-
 @app.command()
 def main(
     json_string: Annotated[
         Optional[str],
         typer.Argument(help="JSON string to translate. If not provided, program will read from STDIN."),
     ] = None,
-    base_jsonpath_str: Annotated[
-        Optional[str],
-        typer.Option(
-            "--base",
-            callback=validate_jsonpath_expression,
-            help="JSONPath expression identifying the JSON element you want to translate (default is the outermost element).",
-        ),
-    ] = "$",
     # Reference: https://typer.tiangolo.com/tutorial/options/version/#fix-with-is_eager
     version: Annotated[
         Optional[bool],
@@ -72,10 +53,6 @@ def main(
     - `echo '{"name": "Ken", "age": 26}' | json-tabulate` (specify JSON via STDIN)
     - `cat input.json | json-tabulate > output.csv` (write CSV to file)
     """
-    # Parse the base JSONPath expression.
-    # Note: By the time this runs, we know it can be parsed successfully,
-    #       since the validation callback will already have run.
-    base_jsonpath: jsonpath.JSONPath = parse(base_jsonpath_str)
 
     try:
         # Check whether the JSON was provided via a CLI argument.
