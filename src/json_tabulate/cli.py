@@ -10,6 +10,7 @@ import typer
 from typing_extensions import Annotated
 
 from .main import process_json, process_json_from_stdin
+from importlib.metadata import version
 
 app = typer.Typer(
     name="json-tabulate",
@@ -77,12 +78,12 @@ def convert(
         raise typer.Exit(1)
 
 
-@app.command()
-def version() -> None:
+@app.command(name="version")
+def show_version() -> None:
     """Show version information."""
-    from . import __version__
 
-    typer.echo(f"json-tabulate {__version__}")
+    version_string = version("json-tabulate")
+    typer.echo(f"json-tabulate {version_string}")
 
 
 if __name__ == "__main__":
