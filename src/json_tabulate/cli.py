@@ -1,5 +1,5 @@
 """
-CLI interface for json-tabulate using typer.
+CLI interface for json-tabulate.
 """
 
 import sys
@@ -14,17 +14,18 @@ from importlib.metadata import version
 
 app = typer.Typer(
     name="json-tabulate",
-    help="Convert JSON to CSV format",
+    help="Translate arbitrarily-nested JSON into CSV",
     no_args_is_help=True,
 )
 
 
-@app.command()
+
+@app.command(name="convert")
 def convert(
-    file_path: Annotated[
-        Optional[Path],
+    json_string: Annotated[
+        Optional[str],
         typer.Argument(
-            help="Path to JSON file to process. If not provided, reads from STDIN."
+            help="JSON string to process. If not provided, reads from STDIN."
         ),
     ] = None,
     output: Annotated[
@@ -40,36 +41,29 @@ def convert(
     Convert JSON to CSV format.
 
     Examples:
-        json-tabulate data.json
         echo '{"name": "John", "age": 30}' | json-tabulate
-        json-tabulate data.json --output result.csv
+        json-tabulate '{"name": "John", "age": 30}'
+        cat data.json | json-tabulate --output result.csv
     """
     try:
-        if file_path is None:
-            # Read from STDIN
+        if json_string is not None:
+            result = process_json(json_input=json_string)
+        else:
             if sys.stdin.isatty():
                 typer.echo(
-                    "Error: No input provided. Provide a file path or pipe JSON to STDIN.",
+                    "Error: No input provided. Provide a JSON string as an argument or pipe JSON to STDIN.",
                     err=True,
                 )
                 raise typer.Exit(1)
             result = process_json_from_stdin()
-        else:
-            # Read from file
-            result = process_json(file_path=file_path)
 
         if output is None:
-            # Print to STDOUT
             typer.echo(result)
         else:
-            # Write to file
             with open(output, "w", encoding="utf-8") as f:
                 f.write(result)
             typer.echo(f"Output written to {output}")
 
-    except FileNotFoundError as e:
-        typer.echo(f"Error: {e}", err=True)
-        raise typer.Exit(1)
     except ValueError as e:
         typer.echo(f"Error: {e}", err=True)
         raise typer.Exit(1)
