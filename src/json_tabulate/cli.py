@@ -28,7 +28,7 @@ def translate(
     ] = None,
 ) -> None:
     """
-    Translate JSON to CSV format.
+    Translate JSON into CSV.
 
     Usage examples:
         echo '{"name": "Aiden", "age": 13}' | json-tabulate translate

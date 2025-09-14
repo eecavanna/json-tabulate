@@ -42,7 +42,7 @@ class TestCLI:
         """Test help command."""
         result = self.runner.invoke(app, ["--help"])
         assert result.exit_code == 0
-        assert "Translate JSON to CSV format" in result.stdout
+        assert "Translate JSON into CSV" in result.stdout
 
     def test_translate_help(self):
         """Test translate command help."""

@@ -61,3 +61,11 @@ uv run ptpython
 ''
 >>> quit()
 ```
+
+Build distributable package:
+
+```sh
+uv build
+```
+
+> The build artifacts will be in the `dist/` directory.
