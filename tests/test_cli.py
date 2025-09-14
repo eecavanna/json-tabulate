@@ -9,7 +9,10 @@ class TestCLI:
     """Test cases for CLI interface."""
 
     def setup_method(self):
-        """Set up test runner."""
+        """Set up test runner.
+        
+        Reference: https://docs.pytest.org/en/stable/how-to/xunit_setup.html#method-and-function-level-setup-teardown
+        """
         self.runner = CliRunner()
 
     def test_version_command(self):
