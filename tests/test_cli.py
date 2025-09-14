@@ -1,6 +1,7 @@
 import re
 
 from typer.testing import CliRunner
+
 from json_tabulate.cli import app
 
 

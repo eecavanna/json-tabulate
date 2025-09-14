@@ -3,6 +3,7 @@ Tests for json-tabulate main module.
 """
 
 import json
+
 import pytest
 
 from json_tabulate.main import process_json
@@ -48,9 +49,7 @@ class TestProcessJson:
 
         result = process_json(json_input=json.dumps(complex_json))
         # Should contain CSV headers for all fields
-        assert result.strip().startswith(
-            "$.metadata.created,$.metadata.version,$.users[0].age"
-        )
+        assert result.strip().startswith("$.metadata.created,$.metadata.version,$.users[0].age")
         # Should contain both users' data
         assert "John" in result
         assert "Jane" in result

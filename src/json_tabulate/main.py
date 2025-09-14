@@ -1,7 +1,5 @@
 """
-Main module for json-tabulate.
-
-This module provides functionality to process JSON input and return formatted output.
+Python interface for json-tabulate.
 """
 
 import csv
@@ -10,11 +8,8 @@ import json
 import sys
 from typing import Union
 
-
 # Define a type alias that describes any JSON value.
-JSONValue = Union[
-    dict[str, "JSONValue"], list["JSONValue"], str, int, float, bool, None
-]
+JSONValue = Union[dict[str, "JSONValue"], list["JSONValue"], str, int, float, bool, None]
 
 
 def process_json(json_input: str = "") -> str:
@@ -79,9 +74,7 @@ def process_json(json_input: str = "") -> str:
 
     # Write the flattened dictionary to a CSV string.
     csv_file_buffer = io.StringIO()
-    writer = csv.DictWriter(
-        csv_file_buffer, fieldnames=sorted(all_keys), lineterminator="\n"
-    )
+    writer = csv.DictWriter(csv_file_buffer, fieldnames=sorted(all_keys), lineterminator="\n")
     writer.writeheader()
     writer.writerows(flat_dicts)
     csv_string = csv_file_buffer.getvalue()

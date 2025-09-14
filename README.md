@@ -15,6 +15,9 @@ uv sync
 Lint Python source code:
 
 ```sh
+uv run ruff check --fix
+
+# Other option: Do a dry run.
 uv run ruff check
 ```
 

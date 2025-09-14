@@ -26,6 +26,14 @@
         {
             "label": "Lint code",
             "type": "shell",
+            "command": "uv run ruff check --fix",
+            "problemMatcher": [
+                "$python"
+            ]
+        },
+        {
+            "label": "Lint code (dry run)",
+            "type": "shell",
             "command": "uv run ruff check",
             "problemMatcher": [
                 "$python"
@@ -60,7 +68,7 @@
             "type": "shell",
             "dependsOrder": "sequence",
             "dependsOn": [
-                "Lint code",
+                "Lint code (dry run)",
                 "Format code (dry run)",
                 "Check types",
                 "Run tests (with coverage)"

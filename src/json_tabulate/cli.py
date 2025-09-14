@@ -3,13 +3,13 @@ CLI interface for json-tabulate.
 """
 
 import sys
+from importlib.metadata import version
 from typing import Optional
 
 import typer
 from typing_extensions import Annotated
 
 from .main import process_json, process_json_from_stdin
-from importlib.metadata import version
 
 app = typer.Typer(
     name="json-tabulate",
@@ -22,9 +22,7 @@ app = typer.Typer(
 def translate(
     json_string: Annotated[
         Optional[str],
-        typer.Argument(
-            help="JSON string to translate. If not provided, program will read from STDIN."
-        ),
+        typer.Argument(help="JSON string to translate. If not provided, program will read from STDIN."),
     ] = None,
 ) -> None:
     """
