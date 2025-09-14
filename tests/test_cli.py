@@ -27,16 +27,16 @@ class TestCLI:
         json_str = '{"name": "John", "age": 30}'
         result = self.runner.invoke(app, ["translate", json_str])
         assert result.exit_code == 0
-        assert "Hello!" in result.stdout
-        assert "Processed JSON string" in result.stdout
+        assert result.stdout.strip().startswith("$.age,$.name")
+        assert "30,John" in result.stdout
 
     def test_translate_with_stdin(self):
         """Test translating a JSON string via STDIN."""
         json_str = '{"name": "Jane", "age": 25}'
         result = self.runner.invoke(app, ["translate"], input=json_str)
         assert result.exit_code == 0
-        assert "Hello!" in result.stdout
-        assert "Processed JSON string" in result.stdout
+        assert result.stdout.strip().startswith("$.age,$.name")
+        assert "25,Jane" in result.stdout
 
     def test_help_command(self):
         """Test help command."""

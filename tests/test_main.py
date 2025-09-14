@@ -15,13 +15,13 @@ class TestProcessJson:
         """Test processing a JSON string."""
         json_input = '{"name": "John", "age": 30}'
         result = process_json(json_input=json_input)
-        assert "Hello!" in result
-        assert "Processed JSON string" in result
-        assert "characters" in result
+        # The output should be a CSV header and a row
+        assert result.strip().startswith("$.age,$.name")
+        assert "30,John" in result
 
     def test_process_json_no_input(self):
-        """Test that providing no input raises ValueError."""
-        with pytest.raises(ValueError, match="No input provided"):
+        """Test that providing no input raises JSONDecodeError."""
+        with pytest.raises(json.JSONDecodeError):
             process_json()
 
     def test_process_json_invalid_string(self):
@@ -33,8 +33,8 @@ class TestProcessJson:
     def test_process_json_empty_object(self):
         """Test processing an empty JSON object."""
         result = process_json(json_input="{}")
-        assert "Hello!" in result
-        assert "Processed JSON string" in result
+        # Should produce an empty string (no header, no rows)
+        assert result.strip() == ""
 
     def test_process_json_complex_object(self):
         """Test processing a complex JSON object."""
@@ -47,6 +47,11 @@ class TestProcessJson:
         }
 
         result = process_json(json_input=json.dumps(complex_json))
-        assert "Hello!" in result
-        assert "Processed JSON string" in result
-        assert "characters" in result
+        # Should contain CSV headers for all fields
+        assert result.strip().startswith(
+            "$.metadata.created,$.metadata.version,$.users[0].age"
+        )
+        # Should contain both users' data
+        assert "John" in result
+        assert "Jane" in result
+        assert "2024-01-01" in result

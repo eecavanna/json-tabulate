@@ -8,42 +8,93 @@ import csv
 import io
 import json
 import sys
-from typing import Optional, Union
+from typing import Union
 
 
 # Define a type alias that describes any JSON value.
-JSONValue = Union[dict[str, "JSONValue"], list["JSONValue"], str, int, float, bool, None]
+JSONValue = Union[
+    dict[str, "JSONValue"], list["JSONValue"], str, int, float, bool, None
+]
 
-def process_json(json_input: Optional[str] = None) -> str:
-    """
-    Process JSON input from a string.
+
+def process_json(json_input: str = "") -> str:
+    r"""Translates the JSON string passed in into a CSV string.
+
+    In the resulting CSV string, each column name is a JSONPath expression indicating
+    where that cell's value existed within the original JSON value.
 
     Args:
-        json_input: JSON string to process
+        json_input: The JSON string you want to translate.
 
     Returns:
-        A greeting message (placeholder for actual JSON-to-CSV conversion)
+        A CSV string that represents the data in the JSON string.
 
     Raises:
-        ValueError: If no input is provided
         json.JSONDecodeError: If the JSON is invalid
+
+    >>> json_input = r'''
+    ... [
+    ...     {"a": 1                                                },
+    ...     {"a": 2, "b": 3                                        },
+    ...     {                "c": {"foo": "bar"}                   },
+    ...     {                                     "d": [4, null, 5]}
+    ... ]
+    ... '''
+    >>> csv_string = process_json(json_input)
+    >>> print(csv_string, end="")
+    $.a,$.b,$.c.foo,$.d[0],$.d[1],$.d[2]
+    1,,,,,
+    2,3,,,,
+    ,,bar,,,
+    ,,,4,,5
+
+    >>> print(process_json('{"a": [1, 2, 3]}'), end="")
+    $.a[0],$.a[1],$.a[2]
+    1,2,3
+
+    # Invalid values:
+    >>> process_json('[1, 2, 3]')
+    Traceback (most recent call last):
+    ...
+    ValueError: JSON value be an object or an array of objects.
     """
-    if json_input is None:
-        raise ValueError("No input provided")
 
     try:
         parsed = json.loads(json_input)
     except json.JSONDecodeError as e:
         raise json.JSONDecodeError(f"Invalid JSON string: {e}", e.doc, e.pos)
-    return f"Hello! Processed JSON string with {len(str(parsed))} characters."
+
+    flat_dicts = []
+    if isinstance(parsed, dict):
+        flat_dicts = [_flatten(parsed, {})]
+    elif isinstance(parsed, list) and all(isinstance(item, dict) for item in parsed):
+        flat_dicts = _flatten_dicts(parsed)
+    else:
+        raise ValueError("JSON value be an object or an array of objects.")
+
+    if len(flat_dicts) == 0:
+        return ""
+
+    all_keys = flat_dicts[0].keys()
+
+    # Write the flattened dictionary to a CSV string.
+    csv_file_buffer = io.StringIO()
+    writer = csv.DictWriter(
+        csv_file_buffer, fieldnames=sorted(all_keys), lineterminator="\n"
+    )
+    writer.writeheader()
+    writer.writerows(flat_dicts)
+    csv_string = csv_file_buffer.getvalue()
+    csv_file_buffer.close()
+
+    return csv_string
 
 
 def process_json_from_stdin() -> str:
-    """
-    Process JSON input from STDIN.
+    r"""Translates the JSON string supplied via STDIN into a CSV string.
 
     Returns:
-        A greeting message after processing STDIN input
+        A CSV string that represents the data in the JSON string.
 
     Raises:
         json.JSONDecodeError: If the JSON from STDIN is invalid
@@ -68,7 +119,7 @@ def _flatten(value: JSONValue, result: dict, base_json_path: str = "$") -> dict:
         an instance of `csv.DictWriter` (see: https://docs.python.org/3/library/csv.html#csv.DictWriter).
 
     Note: This function invokes itself recursively.
-    
+
     In the resulting dictionary:
     - Each key is a JSONPath expression indicating where the primitive value originated within the JSON value.
     - Each value is the primitive value at that location within the JSON value.
@@ -76,7 +127,7 @@ def _flatten(value: JSONValue, result: dict, base_json_path: str = "$") -> dict:
     For example:
     - The JSONPath expression, `$.has_input[1].name`, refers to the `name` property of the object
       that is the second element (0-indexed) of the array in the `has_input` property of the root value.
-    
+
     # Primitive values:
     >>> _flatten(1, {})  # int
     {'$': 1}
@@ -88,7 +139,7 @@ def _flatten(value: JSONValue, result: dict, base_json_path: str = "$") -> dict:
     {'$': True}
     >>> _flatten(None, {})  # None
     {'$': None}
-    
+
     # Invalid value:
     >>> _flatten(lambda: 123, {})  # function
     Traceback (most recent call last):
@@ -221,68 +272,3 @@ def _flatten_dicts(dicts: list[dict[str, JSONValue]]) -> list[dict]:
                 flat_dict[distinct_key] = None
 
     return flat_dicts
-
-
-def translate_json_into_multirow_csv(json_string: str) -> str:
-    r"""Translates a JSON string (consisting of an array of JSON objects) into a "multi-row" CSV string.
-
-    In the resulting CSV string, each column name is a JSONPath expression indicating
-    where that cell's value existed within the original JSON value.
-    
-    Args:
-        json_string: The JSON string you want to translate.
-
-    Returns:
-        A CSV string that represents the data in the JSON string.
-
-    >>> json_string = r'''
-    ... [
-    ...     {"a": 1                                                },
-    ...     {"a": 2, "b": 3                                        },
-    ...     {                "c": {"foo": "bar"}                   },
-    ...     {                                     "d": [4, null, 5]}
-    ... ]
-    ... '''
-    >>> csv_string = translate_json_into_multirow_csv(json_string)
-    >>> print(csv_string, end="")
-    $.a,$.b,$.c.foo,$.d[0],$.d[1],$.d[2]
-    1,,,,,
-    2,3,,,,
-    ,,bar,,,
-    ,,,4,,5
-
-    # Invalid values:
-    >>> translate_json_into_multirow_csv('{"a": [1, 2, 3]}')
-    Traceback (most recent call last):
-    ...
-    ValueError: JSON string must consist of an array of JSON objects.
-    >>> translate_json_into_multirow_csv("[1, 2, 3]")
-    Traceback (most recent call last):
-    ...
-    ValueError: JSON string must consist of an array of JSON objects.
-    """
-
-    # Parse the JSON string into a list of Python dictionaries.
-    dicts = json.loads(json_string)
-
-    if not isinstance(dicts, list) or not all(isinstance(d, dict) for d in dicts):
-        raise ValueError("JSON string must consist of an array of JSON objects.")
-
-    flat_dicts = _flatten_dicts(dicts)
-
-    if len(flat_dicts) == 0:
-        return ""
-    
-    all_keys = flat_dicts[1].keys()
-
-    # Write the flattened dictionary to a CSV string.
-    csv_file_buffer = io.StringIO()
-    writer = csv.DictWriter(
-        csv_file_buffer, fieldnames=sorted(all_keys), lineterminator="\n"
-    )
-    writer.writeheader()
-    writer.writerows(flat_dicts)
-    csv_string = csv_file_buffer.getvalue()
-    csv_file_buffer.close()
-
-    return csv_string
