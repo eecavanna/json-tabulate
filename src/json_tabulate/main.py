@@ -9,9 +9,7 @@ import sys
 from typing import Optional
 
 
-def process_json(
-    json_input: Optional[str] = None
-) -> str:
+def process_json(json_input: Optional[str] = None) -> str:
     """
     Process JSON input from a string.
 

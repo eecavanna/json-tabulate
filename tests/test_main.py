@@ -19,20 +19,16 @@ class TestProcessJson:
         assert "Processed JSON string" in result
         assert "characters" in result
 
-
     def test_process_json_no_input(self):
         """Test that providing no input raises ValueError."""
         with pytest.raises(ValueError, match="No input provided"):
             process_json()
-
 
     def test_process_json_invalid_string(self):
         """Test processing an invalid JSON string."""
         invalid_json = '{"name": "John", "age":}'
         with pytest.raises(json.JSONDecodeError):
             process_json(json_input=invalid_json)
-
-
 
     def test_process_json_empty_object(self):
         """Test processing an empty JSON object."""
