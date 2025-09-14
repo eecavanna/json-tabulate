@@ -37,4 +37,6 @@ Import Python library:
 uv run ptpython
 >>> from json_tabulate import process_json
 >>> process_json(json_input=r'{}')
+''
+>>> quit()
 ```
