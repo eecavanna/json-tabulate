@@ -13,27 +13,27 @@ from importlib.metadata import version
 
 app = typer.Typer(
     name="json-tabulate",
-    help="Translate arbitrarily-nested JSON into CSV",
+    help="Translates arbitrarily-nested JSON into CSV",
     no_args_is_help=True,
 )
 
 
-@app.command(name="convert")
-def convert(
+@app.command(name="translate")
+def translate(
     json_string: Annotated[
         Optional[str],
         typer.Argument(
-            help="JSON string to process. If not provided, reads from STDIN."
+            help="JSON string to translate. If not provided, program will read from STDIN."
         ),
     ] = None,
 ) -> None:
     """
-    Convert JSON to CSV format.
+    Translate JSON to CSV format.
 
-    Examples:
-        echo '{"name": "John", "age": 30}' | json-tabulate
-        json-tabulate '{"name": "John", "age": 30}'
-        cat data.json | json-tabulate > result.csv
+    Usage examples:
+        echo '{"name": "Aiden", "age": 13}' | json-tabulate translate
+        json-tabulate translate '{"name": "Aiden", "age": 13}'
+        cat data.json | json-tabulate translate > result.csv
     """
     try:
         if json_string is not None:
