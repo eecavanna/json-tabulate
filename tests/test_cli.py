@@ -9,13 +9,16 @@ class TestCLI:
     """Test cases for CLI interface."""
 
     def setup_method(self):
-        """Set up test runner.
-
-        References:
-        - https://typer.tiangolo.com/tutorial/testing/#import-and-create-a-clirunner
-        - https://docs.pytest.org/en/stable/how-to/xunit_setup.html#method-and-function-level-setup-teardown
-        """
-        self.runner = CliRunner()
+        # Set up test runner.
+        #
+        # Note: We set `mix_stderr=False` so that `result.stderr` gets populated with whatever would be sent to STDERR.
+        #
+        # References:
+        # - https://docs.pytest.org/en/stable/how-to/xunit_setup.html#method-and-function-level-setup-teardown
+        # - https://typer.tiangolo.com/tutorial/testing/#import-and-create-a-clirunner
+        # - https://github.com/fastapi/typer/issues/385 (RE: using `mix_stderr=False`)
+        #
+        self.runner = CliRunner(mix_stderr=False)
 
     def test_version_option(self):
         result = self.runner.invoke(app, ["--version"])
@@ -48,17 +51,17 @@ class TestCLI:
         invalid_json_string = r'{"name": "Ryu",, "age": 25}'
         result = self.runner.invoke(app, [invalid_json_string])
         assert result.exit_code == 1
-        assert "Invalid JSON string" in result.stdout
+        assert "Invalid JSON string" in result.stderr
 
         result = self.runner.invoke(app, input=invalid_json_string)
         assert result.exit_code == 1
-        assert "Invalid JSON string" in result.stdout
+        assert "Invalid JSON string" in result.stderr
 
     def test_specifying_empty_string(self):
         result = self.runner.invoke(app, [r""])
         assert result.exit_code == 1
-        assert "Invalid JSON string" in result.stdout
+        assert "Invalid JSON string" in result.stderr
 
         result = self.runner.invoke(app, input=r"")
         assert result.exit_code == 1
-        assert "No JSON was provided via STDIN" in result.stdout
+        assert "No JSON was provided via STDIN" in result.stderr
