@@ -9,7 +9,7 @@ from typing import Optional
 import typer
 from typing_extensions import Annotated
 
-from json_tabulate.main import translate_json
+from json_tabulate.core import translate_json
 
 # Create a CLI application.
 # Reference: https://typer.tiangolo.com/tutorial/commands/#explicit-application

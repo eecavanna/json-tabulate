@@ -4,9 +4,46 @@ Python library and CLI app that translates arbitrarily-nested JSON into CSV
 
 ## Usage
 
-<!-- TODO: Write user guide. -->
+### Python library
 
-Coming soon...
+```sh
+pip install json-tabulate
+```
+
+```py
+>>> from json_tabulate.core import translate_json
+>>> translate_json(r'{"name": "Ken", "age": 26}')
+'$.age,$.name\n26,Ken\n'
+```
+
+### CLI app
+
+Here's the usage string displayed by the CLI app:
+
+<!-- 
+Note: This usage string was copy/pasted from the output of `$ uv run json-tabulate --help`, when run in a terminal window that was 80 pixels wide: 
+-->
+
+```console
+ Usage: json-tabulate [OPTIONS] [JSON_STRING]
+
+ Translate JSON into CSV.
+
+ Usage examples:
+
+  • json-tabulate '{"name": "Ken", "age": 26}' (specify JSON via argument)
+  • echo '{"name": "Ken", "age": 26}' | json-tabulate (specify JSON via STDIN)
+  • cat input.json | json-tabulate > output.csv (write CSV to file)
+
+╭─ Arguments ──────────────────────────────────────────────────────────────────╮
+│   json_string      [JSON_STRING]  JSON string to translate. If not provided, │
+│                                   program will read from STDIN.              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --version          Show version number and exit.                             │
+│ --help             Show this message and exit.                               │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
 
 ## Development
 
@@ -78,9 +115,3 @@ uv build
 ```
 
 > The build artifacts will be in the `dist/` directory.
-
-[Generate documentation](https://typer.tiangolo.com/tutorial/package/#generate-docs) (Markdown):
-
-```sh
-uv run typer json_tabulate.cli utils docs --name json-tabulate
-```

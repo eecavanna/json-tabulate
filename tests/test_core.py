@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from json_tabulate.main import translate_json
+from json_tabulate.core import translate_json
 
 
 class TestTranslateJson:
