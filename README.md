@@ -20,6 +20,10 @@ pip install json-tabulate
 
 Here's the usage string displayed by the CLI app:
 
+```sh
+json-tabulate --help
+```
+
 <!-- 
 Note: This usage string was copy/pasted from the output of `$ uv run json-tabulate --help`, when run in a terminal window that was 80 pixels wide: 
 -->
@@ -91,22 +95,6 @@ uv run pytest --cov
 ```
 
 > The default configuration is defined in `pyproject.toml`.
-
-Run CLI app:
-
-```sh
-uv run json-tabulate --help
-```
-
-Import Python library:
-
-```sh
-uv run ptpython
->>> from json_tabulate import translate_json
->>> translate_json(json_input=r'{}')
-''
->>> quit()
-```
 
 Build distributable package:
 
