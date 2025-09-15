@@ -11,7 +11,9 @@ class TestCLI:
     def setup_method(self):
         """Set up test runner.
 
-        Reference: https://docs.pytest.org/en/stable/how-to/xunit_setup.html#method-and-function-level-setup-teardown
+        References:
+        - https://typer.tiangolo.com/tutorial/testing/#import-and-create-a-clirunner
+        - https://docs.pytest.org/en/stable/how-to/xunit_setup.html#method-and-function-level-setup-teardown
         """
         self.runner = CliRunner()
 
@@ -31,34 +33,32 @@ class TestCLI:
         assert "Usage:" in result.stdout
 
     def test_specifying_json_via_argument(self):
-        json_str = '{"name": "Ryu", "age": 25}'
+        json_str = r'{"name": "Ryu", "age": 25}'
         result = self.runner.invoke(app, [json_str])
         assert result.exit_code == 0
-        assert result.stdout.strip().startswith("$.age,$.name")
-        assert "25,Ryu" in result.stdout
+        assert result.stdout == "$.age,$.name\n25,Ryu\n"
 
     def test_specifying_json_via_stdin(self):
-        json_str = '{"name": "Chun Li", "age": 24}'
+        json_str = r'{"name": "Ryu", "age": 25}'
         result = self.runner.invoke(app, input=json_str)
         assert result.exit_code == 0
-        assert result.stdout.strip().startswith("$.age,$.name")
-        assert "24,Chun Li" in result.stdout
+        assert result.stdout == "$.age,$.name\n25,Ryu\n"
 
     def test_specifying_invalid_json(self):
-        invalid_json_string = r'{"a": "b": 1}'
+        invalid_json_string = r'{"name": "Ryu",, "age": 25}'
         result = self.runner.invoke(app, [invalid_json_string])
         assert result.exit_code == 1
-        assert "Error: Invalid JSON string" in result.stdout
+        assert "Invalid JSON string" in result.stdout
 
         result = self.runner.invoke(app, input=invalid_json_string)
         assert result.exit_code == 1
-        assert "Error: Invalid JSON string" in result.stdout
+        assert "Invalid JSON string" in result.stdout
 
     def test_specifying_empty_string(self):
-        result = self.runner.invoke(app, [""])
+        result = self.runner.invoke(app, [r""])
         assert result.exit_code == 1
-        assert "Error: Invalid JSON string" in result.stdout
+        assert "Invalid JSON string" in result.stdout
 
-        result = self.runner.invoke(app, input="")
+        result = self.runner.invoke(app, input=r"")
         assert result.exit_code == 1
         assert "No JSON was provided via STDIN" in result.stdout

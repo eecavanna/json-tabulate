@@ -11,38 +11,38 @@ from json_tabulate.main import translate_json
 
 class TestTranslateJson:
     def test_translate_json_string(self):
-        json_input = '{"name": "John", "age": 30}'
-        result = translate_json(json_input=json_input)
-        # The output should be a CSV header and a row
-        assert result.strip().startswith("$.age,$.name")
-        assert "30,John" in result
+        json_str = r'{"name": "Ryu", "age": 25}'
+        assert translate_json(json_str=json_str) == "$.age,$.name\n25,Ryu\n"
 
-    def test_translate_json_no_input(self):
+    def test_translate_json_empty_string(self):
         with pytest.raises(json.JSONDecodeError):
-            translate_json()
+            translate_json(json_str="")
 
-    def test_translate_json_invalid_string(self):
-        invalid_json = '{"foo": "bar": 1}'
+    def test_translate_json_invalid_json_string(self):
+        invalid_json = r'{"name": "Ryu",, "age": 25}'
         with pytest.raises(json.JSONDecodeError):
-            translate_json(json_input=invalid_json)
+            translate_json(json_str=invalid_json)
 
-    def test_translate_json_empty_object(self):
-        result = translate_json(json_input="{}")
-        assert result.strip() == ""
+    def test_translate_json_valid_empty_object_json_string(self):
+        assert translate_json(json_str="{}") == ""
+
+    def test_translate_json_valid_empty_array_json_string(self):
+        assert translate_json(json_str="[]") == ""
 
     def test_translate_json_complex_object(self):
-        complex_json = {
-            "users": [
-                {"name": "John", "age": 30, "hobbies": ["reading", "swimming"]},
-                {"name": "Jane", "age": 25, "hobbies": ["coding", "hiking"]},
-            ],
-            "metadata": {"version": "1.0", "created": "2024-01-01"},
-        }
-
-        result = translate_json(json_input=json.dumps(complex_json))
-        # Should contain CSV headers for all fields
-        assert result.strip().startswith("$.metadata.created,$.metadata.version,$.users[0].age")
-        # Should contain both users' data
-        assert "John" in result
-        assert "Jane" in result
-        assert "2024-01-01" in result
+        json_str = r"""
+            [
+                {"a": 1                                                },
+                {"a": 2, "b": 3                                        },
+                {                "c": {"foo": "bar"}                   },
+                {                                     "d": [4, null, 5]}
+            ]
+        """
+        result = translate_json(json_str=json_str)
+        result_lines = result.splitlines()
+        assert len(result_lines) == 5  # 1 header line + 4 data lines
+        assert result_lines[0] == "$.a,$.b,$.c.foo,$.d[0],$.d[1],$.d[2]"
+        assert result_lines[1] == "1,,,,,"
+        assert result_lines[2] == "2,3,,,,"
+        assert result_lines[3] == ",,bar,,,"
+        assert result_lines[4] == ",,,4,,5"

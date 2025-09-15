@@ -9,7 +9,7 @@ from typing import Optional
 import typer
 from typing_extensions import Annotated
 
-from .main import translate_json
+from json_tabulate.main import translate_json
 
 # Create a CLI application.
 # Reference: https://typer.tiangolo.com/tutorial/commands/#explicit-application
@@ -57,7 +57,7 @@ def main(
     try:
         # Check whether the JSON was provided via a CLI argument.
         if json_string is not None:
-            result = translate_json(json_input=json_string)
+            result = translate_json(json_str=json_string)
         else:
             # Check whether STDIN is connected to an interactive terminal,
             # in which case, it would not be receiving any input via a pipe.
@@ -66,11 +66,12 @@ def main(
             else:
                 stdin_content = sys.stdin.read().strip()
                 if isinstance(stdin_content, str) and stdin_content != "":
-                    result = translate_json(json_input=stdin_content)
+                    result = translate_json(json_str=stdin_content)
                 else:
                     raise typer.BadParameter("No JSON was provided via STDIN.")
 
-        typer.echo(result)
+        # Print the resulting CSV string, without adding a newline.
+        typer.echo(result, nl=False)
 
     except ValueError as e:
         typer.echo(f"Error: {e}", err=True)
