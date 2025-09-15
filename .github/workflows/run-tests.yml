@@ -24,8 +24,13 @@ jobs:
         cache-dependency-glob: "uv.lock"
     - name: Set up Python virtual environment
       run: uv sync
+    # Note: `ruff format --diff` will return a non-zero exit code if it finds violations.
+    #       That is based upon my observations of it while running it locally.
+    # Docs: https://docs.astral.sh/ruff/formatter/#exit-codes
     - name: Check format
       run: uv run ruff format --diff
+    # Note: `ruff check` will return a non-zero exit code if it finds violations.
+    # Reference: https://docs.astral.sh/ruff/linter/#exit-codes
     - name: Lint code
       run: uv run ruff check
     - name: Run tests
