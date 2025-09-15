@@ -1,6 +1,49 @@
 # json-tabulate
 
-Python library and CLI program that translates arbitrarily-nested JSON into CSV
+Python library and CLI app that translates arbitrarily-nested JSON into CSV
+
+## Usage
+
+### Python library
+
+```sh
+pip install json-tabulate
+```
+
+```py
+>>> from json_tabulate.core import translate_json
+>>> translate_json(r'{"name": "Ken", "age": 26}')
+'$.age,$.name\n26,Ken\n'
+```
+
+### CLI app
+
+Here's the usage string displayed by the CLI app:
+
+<!-- 
+Note: This usage string was copy/pasted from the output of `$ uv run json-tabulate --help`, when run in a terminal window that was 80 pixels wide: 
+-->
+
+```console
+ Usage: json-tabulate [OPTIONS] [JSON_STRING]
+
+ Translate JSON into CSV.
+
+ Usage examples:
+
+  • json-tabulate '{"name": "Ken", "age": 26}' (specify JSON via argument)
+  • echo '{"name": "Ken", "age": 26}' | json-tabulate (specify JSON via STDIN)
+  • cat input.json | json-tabulate > output.csv (write CSV to file)
+
+╭─ Arguments ──────────────────────────────────────────────────────────────────╮
+│   json_string      [JSON_STRING]  JSON string to translate. If not provided, │
+│                                   program will read from STDIN.              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --version          Show version number and exit.                             │
+│ --help             Show this message and exit.                               │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
 
 ## Development
 
@@ -49,7 +92,7 @@ uv run pytest --cov
 
 > The default configuration is defined in `pyproject.toml`.
 
-Run CLI program:
+Run CLI app:
 
 ```sh
 uv run json-tabulate --help
@@ -59,8 +102,8 @@ Import Python library:
 
 ```sh
 uv run ptpython
->>> from json_tabulate import process_json
->>> process_json(json_input=r'{}')
+>>> from json_tabulate import translate_json
+>>> translate_json(json_input=r'{}')
 ''
 >>> quit()
 ```

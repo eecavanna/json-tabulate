@@ -10,46 +10,55 @@ class TestCLI:
 
     def setup_method(self):
         """Set up test runner.
-        
-        Reference: https://docs.pytest.org/en/stable/how-to/xunit_setup.html#method-and-function-level-setup-teardown
+
+        References:
+        - https://typer.tiangolo.com/tutorial/testing/#import-and-create-a-clirunner
+        - https://docs.pytest.org/en/stable/how-to/xunit_setup.html#method-and-function-level-setup-teardown
         """
         self.runner = CliRunner()
 
-    def test_version_command(self):
-        result = self.runner.invoke(app, ["version"])
+    def test_version_option(self):
+        result = self.runner.invoke(app, ["--version"])
         assert result.exit_code == 0
         output_str = result.stdout
-        assert "json-tabulate" in output_str
 
-        # Assert that the version string contain (at least somewhere within it)
-        # "digit(s), dot, digit(s), dot, digit(s)". This allows for suffixes like
-        # "rc1", as in "1.0.0rc1".
+        # Assert that the version string contains (at least somewhere within it)
+        # "digit(s), dot, digit(s), dot, digit(s)" (e.g. "1.2.3"). This allows for
+        # suffixes like "rc1", as in "1.2.3rc1".
         assert re.search(r"\d+\.\d+\.\d+", output_str) is not None
 
-    def test_translate_with_argument(self):
-        """Test translating a JSON string via argument."""
-        json_str = '{"name": "John", "age": 30}'
-        result = self.runner.invoke(app, ["translate", json_str])
-        assert result.exit_code == 0
-        assert result.stdout.strip().startswith("$.age,$.name")
-        assert "30,John" in result.stdout
-
-    def test_translate_with_stdin(self):
-        """Test translating a JSON string via STDIN."""
-        json_str = '{"name": "Jane", "age": 25}'
-        result = self.runner.invoke(app, ["translate"], input=json_str)
-        assert result.exit_code == 0
-        assert result.stdout.strip().startswith("$.age,$.name")
-        assert "25,Jane" in result.stdout
-
-    def test_help_command(self):
-        """Test help command."""
+    def test_help_option(self):
         result = self.runner.invoke(app, ["--help"])
         assert result.exit_code == 0
-        assert "Translate JSON into CSV" in result.stdout
+        assert "Usage:" in result.stdout
 
-    def test_translate_help(self):
-        """Test translate command help."""
-        result = self.runner.invoke(app, ["translate", "--help"])
+    def test_specifying_json_via_argument(self):
+        json_str = r'{"name": "Ryu", "age": 25}'
+        result = self.runner.invoke(app, [json_str])
         assert result.exit_code == 0
-        assert "Usage examples" in result.stdout
+        assert result.stdout == "$.age,$.name\n25,Ryu\n"
+
+    def test_specifying_json_via_stdin(self):
+        json_str = r'{"name": "Ryu", "age": 25}'
+        result = self.runner.invoke(app, input=json_str)
+        assert result.exit_code == 0
+        assert result.stdout == "$.age,$.name\n25,Ryu\n"
+
+    def test_specifying_invalid_json(self):
+        invalid_json_string = r'{"name": "Ryu",, "age": 25}'
+        result = self.runner.invoke(app, [invalid_json_string])
+        assert result.exit_code == 1
+        assert "Invalid JSON string" in result.stdout
+
+        result = self.runner.invoke(app, input=invalid_json_string)
+        assert result.exit_code == 1
+        assert "Invalid JSON string" in result.stdout
+
+    def test_specifying_empty_string(self):
+        result = self.runner.invoke(app, [r""])
+        assert result.exit_code == 1
+        assert "Invalid JSON string" in result.stdout
+
+        result = self.runner.invoke(app, input=r"")
+        assert result.exit_code == 1
+        assert "No JSON was provided via STDIN" in result.stdout

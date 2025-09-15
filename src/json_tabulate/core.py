@@ -5,21 +5,20 @@ Python interface for json-tabulate.
 import csv
 import io
 import json
-import sys
 from typing import Union
 
 # Define a type alias that describes any JSON value.
 JSONValue = Union[dict[str, "JSONValue"], list["JSONValue"], str, int, float, bool, None]
 
 
-def process_json(json_input: str = "") -> str:
+def translate_json(json_str: str = "") -> str:
     r"""Translates the JSON string passed in into a CSV string.
 
     In the resulting CSV string, each column name is a JSONPath expression indicating
     where that cell's value existed within the original JSON value.
 
     Args:
-        json_input: The JSON string you want to translate.
+        json_str: The JSON string you want to translate.
 
     Returns:
         A CSV string that represents the data in the JSON string.
@@ -27,7 +26,7 @@ def process_json(json_input: str = "") -> str:
     Raises:
         json.JSONDecodeError: If the JSON is invalid
 
-    >>> json_input = r'''
+    >>> json_str = r'''
     ... [
     ...     {"a": 1                                                },
     ...     {"a": 2, "b": 3                                        },
@@ -35,7 +34,7 @@ def process_json(json_input: str = "") -> str:
     ...     {                                     "d": [4, null, 5]}
     ... ]
     ... '''
-    >>> csv_string = process_json(json_input)
+    >>> csv_string = translate_json(json_str)
     >>> print(csv_string, end="")
     $.a,$.b,$.c.foo,$.d[0],$.d[1],$.d[2]
     1,,,,,
@@ -43,19 +42,19 @@ def process_json(json_input: str = "") -> str:
     ,,bar,,,
     ,,,4,,5
 
-    >>> print(process_json('{"a": [1, 2, 3]}'), end="")
+    >>> print(translate_json('{"a": [1, 2, 3]}'), end="")
     $.a[0],$.a[1],$.a[2]
     1,2,3
 
     # Invalid values:
-    >>> process_json('[1, 2, 3]')
+    >>> translate_json('[1, 2, 3]')
     Traceback (most recent call last):
     ...
     ValueError: JSON value be an object or an array of objects.
     """
 
     try:
-        parsed = json.loads(json_input)
+        parsed = json.loads(json_str)
     except json.JSONDecodeError as e:
         raise json.JSONDecodeError(f"Invalid JSON string: {e}", e.doc, e.pos)
 
@@ -71,6 +70,8 @@ def process_json(json_input: str = "") -> str:
         return ""
 
     all_keys = flat_dicts[0].keys()
+    if len(all_keys) == 0:
+        return ""
 
     # Write the flattened dictionary to a CSV string.
     csv_file_buffer = io.StringIO()
@@ -81,22 +82,6 @@ def process_json(json_input: str = "") -> str:
     csv_file_buffer.close()
 
     return csv_string
-
-
-def process_json_from_stdin() -> str:
-    r"""Translates the JSON string supplied via STDIN into a CSV string.
-
-    Returns:
-        A CSV string that represents the data in the JSON string.
-
-    Raises:
-        json.JSONDecodeError: If the JSON from STDIN is invalid
-    """
-    stdin_content = sys.stdin.read().strip()
-    if not stdin_content:
-        raise ValueError("No input provided via STDIN")
-
-    return process_json(json_input=stdin_content)
 
 
 def _flatten(value: JSONValue, result: dict, base_json_path: str = "$") -> dict:

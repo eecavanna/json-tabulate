@@ -1,21 +1,30 @@
 [project]
 name = "json-tabulate"
-version = "0.1.0"
-description = "Python library and CLI program that translates arbitrarily-nested JSON into CSV"
+version = "0.0.0"
+description = "Python library and CLI app that translates arbitrarily-nested JSON into CSV"
 readme = "README.md"
 authors = []
 requires-python = ">=3.9"
 dependencies = [
+    # We use Typer as the CLI application framework.
     "typer>=0.9.0",
-    "typing-extensions>=4.15.0"
+    # We depend on the `typing-extensions` package's `Annotated` class,
+    # which we use to define metadata on CLI arguments/options.
+    "typing-extensions>=4.15.0",
 ]
 
 [dependency-groups]
 dev = [
+    # We use `mypy` for static type checking.
     "mypy>=1.18.1",
+    # We use `ptpython` as a developer-friendly REPL.
+    # Docs: https://github.com/prompt-toolkit/ptpython
     "ptpython>=3.0.31",
+    # We use `pytest` as a test runner.
     "pytest>=7.0.0",
+    # We use `pytest-cov` to report test coverage.
     "pytest-cov>=4.0.0",
+    # We use `ruff` as a code formatter and linter.
     "ruff>=0.13.0",
 ]
 
@@ -28,6 +37,8 @@ Homepage = "https://github.com/eecavanna/json-tabulate"
 Repository = "https://github.com/eecavanna/json-tabulate"
 
 [project.scripts]
+# Tell package installers to install a CLI program named `json-tabulate`.
+# Reference: https://typer.tiangolo.com/tutorial/package/#add-a-script
 json-tabulate = "json_tabulate.cli:app"
 
 # Configure pytest to run doctests, and to not display a code coverage report if a test fails.
@@ -44,6 +55,12 @@ source = ["src"]
 # Docs: https://mypy.readthedocs.io/en/stable/config_file.html#using-a-pyproject-toml-file
 [tool.mypy]
 files = ["src", "tests"]
+
+# Configure mypy to ignore missing types for third-party modules that don't provide type stubs.
+# Docs: https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-library-stubs-or-py-typed-marker
+[[tool.mypy.overrides]]
+module = ""  # can add module name globs to this list
+ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 120
