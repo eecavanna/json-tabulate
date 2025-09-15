@@ -1,6 +1,6 @@
 [project]
 name = "json-tabulate"
-version = "0.0.0"
+dynamic = ["version"]
 description = "Python library and CLI app that translates arbitrarily-nested JSON into CSV"
 readme = "README.md"
 authors = []
@@ -29,8 +29,18 @@ dev = [
 ]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "uv-dynamic-versioning"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+# Note: We use dynamic versioning.
+#       You can preview the version number by running: `$ uvx uv-dynamic-versioning`
+# Docs: https://github.com/ninoseki/uv-dynamic-versioning/blob/main/docs/version_source.md
+[tool.uv-dynamic-versioning]
+vcs = "git"
+style = "pep440"  # can use "pep440" (default) or "semver"
 
 [project.urls]
 Homepage = "https://github.com/eecavanna/json-tabulate"
