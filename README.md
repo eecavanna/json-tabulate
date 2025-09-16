@@ -42,16 +42,22 @@ $.a,$.b.d,$.b.e[0],$.b.e[1],$.b.e[2],$.c
 | --- | ----- | -------- | -------- | -------- | --- |
 | 1   | f     | g        | h        | i        | 2 |
 
-Each column names is a [JSONPath](https://en.wikipedia.org/wiki/JSONPath) expression
+Each column name is a [JSONPath](https://en.wikipedia.org/wiki/JSONPath) expression
 indicating where the values in that column came from.
 
 ## Usage
 
-### Python library
+### Installation
+
+Here's how you can install [`json-tabulate`](https://pypi.org/project/json-tabulate/).
 
 ```sh
 pip install json-tabulate
 ```
+
+That will install both the Python library and the command-line app.
+
+### Python library
 
 ```py
 >>> from json_tabulate.core import translate_json
