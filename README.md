@@ -51,11 +51,22 @@ Note: This usage string was copy/pasted from the output of `$ uv run json-tabula
 
 ## Development
 
-> Using VS Code? The file, `.vscode/tasks.json`, contains VS Code [task](https://code.visualstudio.com/docs/debugtest/tasks) definitions for several of the commands shown below. You can invoke those tasks via the [command palette](https://code.visualstudio.com/api/ux-guidelines/command-palette), or—if you have the [Task Runner](https://marketplace.visualstudio.com/items?itemName=SanaAjani.taskrunnercode) extension installed—via the "Task Runner" panel.
+<!-- markdownlint-disable -->
+<details>
+<summary>Show/hide developer documentation</summary>
+<!-- markdownlint-enable -->
+
+> Using VS Code? The file, `.vscode/tasks.json`, contains VS Code
+> [task](https://code.visualstudio.com/docs/debugtest/tasks) definitions for
+> several of the commands shown below. You can invoke those tasks via the
+> [command palette](https://code.visualstudio.com/api/ux-guidelines/command-palette),
+> or—if you have the [Task Runner](https://marketplace.visualstudio.com/items?itemName=SanaAjani.taskrunnercode)
+> extension installed—via the "Task Runner" panel.
 
 ### Setup Python virtual environment
 
-Here's how you can create a Python virtual environment and install the Python dependencies within it:
+Here's how you can create a Python virtual environment and install the Python
+dependencies within it:
 
 ```sh
 uv sync
@@ -105,3 +116,5 @@ uv build
 ```
 
 > The build artifacts will be in the `dist/` directory.
+
+</details>
