@@ -1,5 +1,5 @@
 """
-CLI interface for json-tabulate.
+CLI providing access to core functionality of json-tabulate.
 """
 
 import sys

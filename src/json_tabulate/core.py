@@ -1,5 +1,5 @@
 """
-Python interface for json-tabulate.
+Core functionality of json-tabulate, independent of user interface.
 """
 
 import csv
@@ -73,7 +73,7 @@ def translate_json(json_str: str = "") -> str:
     if len(all_keys) == 0:
         return ""
 
-    # Write the flattened dictionary to a CSV string.
+    # Write the list of flattened dictionaries to a CSV string.
     csv_file_buffer = io.StringIO()
     writer = csv.DictWriter(csv_file_buffer, fieldnames=sorted(all_keys), lineterminator="\n")
     writer.writeheader()
