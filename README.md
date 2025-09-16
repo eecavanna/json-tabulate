@@ -1,6 +1,6 @@
 # json-tabulate
 
-`json-tabluate` is a Python library and CLI app that you can use to translate an arbitrarily-nested JSON object—or an array of those objects—into a flat CSV table.
+`json-tabulate` is a Python library and CLI app that you can use to translate an arbitrarily-nested JSON object—or an array of those objects—into a flat CSV table.
 
 ```mermaid
 graph LR
