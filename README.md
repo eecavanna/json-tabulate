@@ -1,6 +1,49 @@
 # json-tabulate
 
-Python library and CLI app that translates arbitrarily-nested JSON into CSV
+`json-tabluate` is a Python library and CLI app that you can use to translate an arbitrarily-nested JSON object—or an array of those objects—into a flat CSV table.
+
+```mermaid
+graph LR
+  json_obj[JSON<br>object] --> app_1[json-tabulate] --> csv_single[CSV<br>1 header row + 1 data row]
+  json_list[JSON<br>array of N objects] --> app_2[json-tabulate] --> csv_multi[CSV<br>1 header row + N data rows]
+```
+
+## Example
+
+It translates this (arbitrarily-nested JSON object):
+
+```json
+{
+  "a": 1,
+  "b": {
+    "d": "f",
+    "e": ["g", "h", "i"]
+  },
+  "c": 2
+}
+```
+
+Into this (CSV table):
+
+<!-- markdownlint-disable -->
+<details open>
+<summary>Show/hide CSV string</summary>
+<br />
+<!-- markdownlint-enable -->
+
+```csv
+$.a,$.b.d,$.b.e[0],$.b.e[1],$.b.e[2],$.c
+1,f,g,h,i,2
+```
+
+</details>
+
+| $.a | $.b.d | $.b.e[0] | $.b.e[1] | $.b.e[2] | $.c |
+| --- | ----- | -------- | -------- | -------- | --- |
+| 1   | f     | g        | h        | i        | 2 |
+
+Each column names is a [JSONPath](https://en.wikipedia.org/wiki/JSONPath) expression
+indicating where the values in that column came from.
 
 ## Usage
 
@@ -25,7 +68,9 @@ json-tabulate --help
 ```
 
 <!-- 
-Note: This usage string was copy/pasted from the output of `$ uv run json-tabulate --help`, when run in a terminal window that was 80 pixels wide: 
+Note: The usage string below was copy/pasted from the output of
+      `$ uv run json-tabulate --help`, when run in a terminal window
+      that was 80 pixels wide.
 -->
 
 ```console
@@ -54,6 +99,7 @@ Note: This usage string was copy/pasted from the output of `$ uv run json-tabula
 <!-- markdownlint-disable -->
 <details>
 <summary>Show/hide developer documentation</summary>
+<br />
 <!-- markdownlint-enable -->
 
 > Using VS Code? The file, `.vscode/tasks.json`, contains VS Code
