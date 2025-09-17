@@ -46,3 +46,31 @@ class TestTranslateJson:
         assert result_lines[2] == "2,3,,,,"
         assert result_lines[3] == ",,bar,,,"
         assert result_lines[4] == ",,,4,,5"
+
+    def test_translate_json_with_tab_delimiter(self):
+        json_str = r'{"name": "Ryu", "age": 25}'
+        result = translate_json(json_str=json_str, delimiter="\t")
+        assert result == "$.age\t$.name\n25\tRyu\n"
+
+    def test_translate_json_tsv_complex_object(self):
+        json_str = r"""
+            [
+                {"a": 1                                                },
+                {"a": 2, "b": 3                                        },
+                {                "c": {"foo": "bar"}                   },
+                {                                     "d": [4, null, 5]}
+            ]
+        """
+        result = translate_json(json_str=json_str, delimiter="\t")
+        result_lines = result.splitlines()
+        assert len(result_lines) == 5  # 1 header line + 4 data lines
+        assert result_lines[0] == "$.a\t$.b\t$.c.foo\t$.d[0]\t$.d[1]\t$.d[2]"
+        assert result_lines[1] == "1\t\t\t\t\t"
+        assert result_lines[2] == "2\t3\t\t\t\t"
+        assert result_lines[3] == "\t\tbar\t\t\t"
+        assert result_lines[4] == "\t\t\t4\t\t5"
+
+    def test_translate_json_custom_delimiter(self):
+        json_str = r'{"name": "Ryu", "age": 25}'
+        result = translate_json(json_str=json_str, delimiter="|")
+        assert result == "$.age|$.name\n25|Ryu\n"

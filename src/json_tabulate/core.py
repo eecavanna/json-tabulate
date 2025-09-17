@@ -11,7 +11,7 @@ from typing import Union
 JSONValue = Union[dict[str, "JSONValue"], list["JSONValue"], str, int, float, bool, None]
 
 
-def translate_json(json_str: str = "") -> str:
+def translate_json(json_str: str = "", delimiter: str = ",") -> str:
     r"""Translates the JSON string passed in into a CSV string.
 
     In the resulting CSV string, each column name is a JSONPath expression indicating
@@ -19,6 +19,7 @@ def translate_json(json_str: str = "") -> str:
 
     Args:
         json_str: The JSON string you want to translate.
+        delimiter: The delimiter to use for separating fields (default is comma for CSV).
 
     Returns:
         A CSV string that represents the data in the JSON string.
@@ -75,7 +76,7 @@ def translate_json(json_str: str = "") -> str:
 
     # Write the list of flattened dictionaries to a CSV string.
     csv_file_buffer = io.StringIO()
-    writer = csv.DictWriter(csv_file_buffer, fieldnames=sorted(all_keys), lineterminator="\n")
+    writer = csv.DictWriter(csv_file_buffer, fieldnames=sorted(all_keys), lineterminator="\n", delimiter=delimiter)
     writer.writeheader()
     writer.writerows(flat_dicts)
     csv_string = csv_file_buffer.getvalue()
