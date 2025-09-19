@@ -3,6 +3,7 @@ CLI providing access to core functionality of json-tabulate.
 """
 
 import sys
+from enum import Enum
 from importlib.metadata import version
 from typing import Optional
 
@@ -10,6 +11,14 @@ import typer
 from typing_extensions import Annotated
 
 from json_tabulate.core import translate_json
+
+
+class OutputFormat(str, Enum):
+    """Output format options."""
+
+    CSV = "csv"
+    TSV = "tsv"
+
 
 # Create a CLI application.
 # Reference: https://typer.tiangolo.com/tutorial/commands/#explicit-application
@@ -37,6 +46,15 @@ def main(
         Optional[str],
         typer.Argument(help="JSON string to translate. If not provided, program will read from STDIN."),
     ] = None,
+    # Reference: https://typer.tiangolo.com/tutorial/parameter-types/enum/
+    output_format: Annotated[
+        OutputFormat,
+        typer.Option(
+            "--output-format",
+            help="Whether you want the output to be comma-delimited or tab-delimited.",
+            case_sensitive=False,
+        ),
+    ] = OutputFormat.CSV,
     # Reference: https://typer.tiangolo.com/tutorial/options/version/#fix-with-is_eager
     version: Annotated[
         Optional[bool],
@@ -54,10 +72,13 @@ def main(
     - `cat input.json | json-tabulate > output.csv` (write CSV to file)
     """
 
+    # Determine the output delimiter based upon the specified output format.
+    output_delimiter = "\t" if output_format == OutputFormat.TSV else ","
+
     try:
         # Check whether the JSON was provided via a CLI argument.
         if json_string is not None:
-            result = translate_json(json_str=json_string)
+            result = translate_json(json_str=json_string, output_delimiter=output_delimiter)
         else:
             # Check whether STDIN is connected to an interactive terminal,
             # in which case, it would not be receiving any input via a pipe.
@@ -66,7 +87,7 @@ def main(
             else:
                 stdin_content = sys.stdin.read().strip()
                 if isinstance(stdin_content, str) and stdin_content != "":
-                    result = translate_json(json_str=stdin_content)
+                    result = translate_json(json_str=stdin_content, output_delimiter=output_delimiter)
                 else:
                     raise typer.BadParameter("No JSON was provided via STDIN.")
 

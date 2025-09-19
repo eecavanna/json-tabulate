@@ -157,6 +157,9 @@ uv run pytest
 
 # Other option: Run tests and measure code coverage.
 uv run pytest --cov
+
+# Other option: Run tests, measure code coverage, and see which lines lack coverage.
+uv run pytest --cov --cov-report=term-missing
 ```
 
 > The default configuration is defined in `pyproject.toml`.

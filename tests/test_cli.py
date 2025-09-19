@@ -62,3 +62,27 @@ class TestCLI:
         result = self.runner.invoke(app, input=r"")
         assert result.exit_code == 1
         assert "No JSON was provided via STDIN" in result.output
+
+    def test_output_format_csv_implicit(self):
+        json_str = r'{"name": "Ryu", "age": 25}'
+        result = self.runner.invoke(app, [json_str])
+        assert result.exit_code == 0
+        assert result.output == "$.age,$.name\n25,Ryu\n"
+
+    def test_output_format_csv_explicit(self):
+        json_str = r'{"name": "Ryu", "age": 25}'
+        result = self.runner.invoke(app, ["--output-format", "csv", json_str])
+        assert result.exit_code == 0
+        assert result.output == "$.age,$.name\n25,Ryu\n"
+
+    def test_output_format_tsv(self):
+        json_str = r'{"name": "Ryu", "age": 25}'
+        result = self.runner.invoke(app, ["--output-format", "tsv", json_str])
+        assert result.exit_code == 0
+        assert result.output == "$.age\t$.name\n25\tRyu\n"
+
+    def test_invalid_output_format(self):
+        json_str = r'{"name": "Ryu", "age": 25}'
+        result = self.runner.invoke(app, ["--output-format", "foo", json_str])
+        assert result.exit_code == 2
+        assert "Usage:" in result.output
