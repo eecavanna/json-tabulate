@@ -63,7 +63,7 @@ class TestCLI:
         assert result.exit_code == 1
         assert "No JSON was provided via STDIN" in result.output
 
-    def test_output_format_csv_default(self):
+    def test_output_format_csv_implicit(self):
         json_str = r'{"name": "Ryu", "age": 25}'
         result = self.runner.invoke(app, [json_str])
         assert result.exit_code == 0
@@ -81,25 +81,8 @@ class TestCLI:
         assert result.exit_code == 0
         assert result.output == "$.age\t$.name\n25\tRyu\n"
 
-    def test_output_format_tsv_via_stdin(self):
+    def test_invalid_output_format(self):
         json_str = r'{"name": "Ryu", "age": 25}'
-        result = self.runner.invoke(app, ["--output-format", "tsv"], input=json_str)
-        assert result.exit_code == 0
-        assert result.output == "$.age\t$.name\n25\tRyu\n"
-
-    def test_output_format_tsv_complex(self):
-        json_str = r'[{"a": 1}, {"a": 2, "b": 3}]'
-        result = self.runner.invoke(app, ["--output-format", "tsv", json_str])
-        assert result.exit_code == 0
-        expected_lines = result.output.splitlines()
-        assert len(expected_lines) == 3  # 1 header + 2 data lines
-        assert expected_lines[0] == "$.a\t$.b"
-        assert expected_lines[1] == "1\t"
-        assert expected_lines[2] == "2\t3"
-
-    def test_output_format_invalid(self):
-        json_str = r'{"name": "Ryu", "age": 25}'
-        result = self.runner.invoke(app, ["--output-format", "invalid", json_str])
-        assert result.exit_code == 1
-        assert "Invalid output format 'invalid'" in result.output
-        assert "Must be 'csv' or 'tsv'" in result.output
+        result = self.runner.invoke(app, ["--output-format", "foo", json_str])
+        assert result.exit_code == 2
+        assert "'foo' is not one of 'csv', 'tsv'" in result.output

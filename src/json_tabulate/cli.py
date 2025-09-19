@@ -3,6 +3,7 @@ CLI providing access to core functionality of json-tabulate.
 """
 
 import sys
+from enum import Enum
 from importlib.metadata import version
 from typing import Optional
 
@@ -10,6 +11,14 @@ import typer
 from typing_extensions import Annotated
 
 from json_tabulate.core import translate_json
+
+
+class OutputFormat(str, Enum):
+    """Output format options."""
+
+    CSV = "csv"
+    TSV = "tsv"
+
 
 # Create a CLI application.
 # Reference: https://typer.tiangolo.com/tutorial/commands/#explicit-application
@@ -37,12 +46,15 @@ def main(
         Optional[str],
         typer.Argument(help="JSON string to translate. If not provided, program will read from STDIN."),
     ] = None,
+    # Reference: https://typer.tiangolo.com/tutorial/parameter-types/enum/
     output_format: Annotated[
-        str,
+        OutputFormat,
         typer.Option(
-            "--output-format", help="Output format: csv (default) or tsv"
+            "--output-format",
+            help="Whether you want the output to be comma-delimited or tab-delimited.",
+            case_sensitive=False,
         ),
-    ] = "csv",
+    ] = OutputFormat.CSV,
     # Reference: https://typer.tiangolo.com/tutorial/options/version/#fix-with-is_eager
     version: Annotated[
         Optional[bool],
@@ -58,20 +70,15 @@ def main(
     - `json-tabulate '{"name": "Ken", "age": 26}'` (specify JSON via argument)
     - `echo '{"name": "Ken", "age": 26}' | json-tabulate` (specify JSON via STDIN)
     - `cat input.json | json-tabulate > output.csv` (write CSV to file)
-    - `json-tabulate --output-format tsv '{"name": "Ken", "age": 26}'` (TSV output)
     """
 
+    # Determine the output delimiter based upon the specified output format.
+    output_delimiter = "\t" if output_format == OutputFormat.TSV else ","
+
     try:
-        # Validate output format
-        if output_format not in ("csv", "tsv"):
-            raise typer.BadParameter(f"Invalid output format '{output_format}'. Must be 'csv' or 'tsv'.")
-        
-        # Determine delimiter based on output format
-        delimiter = "," if output_format == "csv" else "\t"
-        
         # Check whether the JSON was provided via a CLI argument.
         if json_string is not None:
-            result = translate_json(json_str=json_string, delimiter=delimiter)
+            result = translate_json(json_str=json_string, output_delimiter=output_delimiter)
         else:
             # Check whether STDIN is connected to an interactive terminal,
             # in which case, it would not be receiving any input via a pipe.
@@ -80,7 +87,7 @@ def main(
             else:
                 stdin_content = sys.stdin.read().strip()
                 if isinstance(stdin_content, str) and stdin_content != "":
-                    result = translate_json(json_str=stdin_content, delimiter=delimiter)
+                    result = translate_json(json_str=stdin_content, output_delimiter=output_delimiter)
                 else:
                     raise typer.BadParameter("No JSON was provided via STDIN.")
 
