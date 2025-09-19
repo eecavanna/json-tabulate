@@ -8,7 +8,9 @@ graph LR
   json_list[JSON<br>array of N objects] --> app_2[json-tabulate] --> csv_multi[CSV<br>1 header row + N data rows]
 ```
 
-## Example
+## Examples
+
+### JSON object
 
 It translates this (arbitrarily-nested JSON object):
 
@@ -23,13 +25,16 @@ It translates this (arbitrarily-nested JSON object):
 }
 ```
 
-Into this (CSV table):
+Into this:
+
+| $.a | $.b.d | $.b.e[0] | $.b.e[1] | $.b.e[2] | $.c |
+| --- | ----- | -------- | -------- | -------- | --- |
+| 1   | f     | g        | h        | i        | 2 |
 
 <!-- markdownlint-disable -->
-<details open>
-<summary>Show/hide CSV string</summary>
+<details>
+<summary>Show/hide raw CSV string</summary>
 <br />
-<!-- markdownlint-enable -->
 
 ```csv
 $.a,$.b.d,$.b.e[0],$.b.e[1],$.b.e[2],$.c
@@ -37,10 +42,50 @@ $.a,$.b.d,$.b.e[0],$.b.e[1],$.b.e[2],$.c
 ```
 
 </details>
+<br />
+<!-- markdownlint-enable -->
 
-| $.a | $.b.d | $.b.e[0] | $.b.e[1] | $.b.e[2] | $.c |
-| --- | ----- | -------- | -------- | -------- | --- |
-| 1   | f     | g        | h        | i        | 2 |
+Each column name is a [JSONPath](https://en.wikipedia.org/wiki/JSONPath) expression
+indicating where the value in that column came from.
+
+### JSON array of objects
+
+It translates this (JSON array of arbitrarily-nested objects):
+
+```json
+[
+  {
+    "a": 1,
+    "b": 2
+  },
+  {
+    "a": 1,
+    "c": ["d", "e", "f"]
+  }
+]
+```
+
+Into this:
+
+| $.a | $.b   | $.c[0]   | $.c[1]   | $.c[2]   |
+| --- | ----- | -------- | -------- | -------- |
+| 1   | 2     |          |          |          |
+| 1   |       | d        | e        | f        |
+
+<!-- markdownlint-disable -->
+<details>
+<summary>Show/hide raw CSV string</summary>
+<br />
+
+```csv
+$.a,$.b,$.c[0],$.c[1],$.c[2]
+1,2,,,
+1,,d,e,f
+```
+
+</details>
+<br />
+<!-- markdownlint-enable -->
 
 Each column name is a [JSONPath](https://en.wikipedia.org/wiki/JSONPath) expression
 indicating where the values in that column came from.
@@ -95,8 +140,11 @@ Note: The usage string below was copy/pasted from the output of
 │                                   program will read from STDIN.              │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
-│ --version          Show version number and exit.                             │
-│ --help             Show this message and exit.                               │
+│ --output-format        [csv|tsv]  Whether you want the output to be          │
+│                                   comma-delimited or tab-delimited.          │
+│                                   [default: csv]                             │
+│ --version                         Show version number and exit.              │
+│ --help                            Show this message and exit.                │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
